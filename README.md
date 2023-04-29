@@ -6,9 +6,9 @@ Regular C and OpenCL-based encoders for BC1-5 and ETC1/2 aimed at producing extr
 Quality / Performance
 =====================
 
-The BC encoders at "high" quality setting typically beat RGBCX at hidden quality setting 19 slightly in PSNR. As far as I'm aware, RGBCX is currently one of if not _the_ highest-quality BC1-5 encoder out there.
+The BC encoders at "high" quality setting typically beat RGBCX (https://github.com/richgel999/bc7enc) at hidden quality setting 19 slightly in PSNR. As far as I'm aware, RGBCX is currently one of if not _the_ highest-quality BC1-5 encoder out there.
 
-The ETC1 encoder at "normal" quality setting typically beats Crunch at uber quality in PSNR, but with considerably better performance. Again, as far as I'm aware, Crunch is the high-quality ETC1 encoder out there.
+The ETC1 encoder at "normal" quality setting typically beats Crunch (https://github.com/Unity-Technologies/crunch/tree/unity) at "uber" quality in PSNR, but with considerably better performance. Again, as far as I'm aware, Crunch is the high-quality ETC1 encoder out there.
 
 The encoders are fully multithreaded and under normal circumstances will occupy all cores/threads at 100% until encoding is completed.
 
@@ -34,20 +34,20 @@ You will need to have an OpenCL SDK installed (e.g. https://github.com/KhronosGr
 
 You will need to include the following .libs (included in this repository where possible):
 
-dbghelp.lib
-opengl32.lib
-DevIL.lib
-ILU.lib
-ILUT.lib
-ktx.lib
-opencl.lib
+- dbghelp.lib
+- opengl32.lib
+- DevIL.lib
+- ILU.lib
+- ILUT.lib
+- ktx.lib
+- opencl.lib
 
 You must include the following .dlls in the same directory as the final executable (or where Windows can otherwise find them):
 
-DevIL.dll
-ILU.dll
-ILUT.dll
-ktx.dll
+- DevIL.dll
+- ILU.dll
+- ILUT.dll
+- ktx.dll
 
 You _MUST NOT_ enable "warnings as errors". The library still has a lot of warnings (some legitimate), mostly regarding casting to smaller types, erroneous "potentially uninitialised variable referenced", and unreferenced function parameters. The (auto-generated) vector math source files do produce a lot of legitimate warnings, but for functions that're never used, so they can be safely ignored. I will likely fix these warnings at some point.
 
