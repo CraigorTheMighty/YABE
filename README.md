@@ -3,10 +3,15 @@ YABE - Yet Another Block Encoder
 
 Regular C and OpenCL-based encoders for BC1-5 and ETC1/2 aimed at producing extreme quality output at reasonable performance.
 
-Uses the DevIL library (https://openil.sourceforge.net/download.php) to load source images.
+Dependencies
+============
 
-Also includes the RBGCX encoder (https://github.com/richgel999/bc7enc) for the purposes of comparing output. Enable by adding 
-"#define USE_RGBCX_ENCODER" to "dds.c".
+Uses the DevIL library (https://openil.sourceforge.net/download.php) to load source images. DevIL is licensed under LGPL 2.1.
+
+Uses the libKTX (https://github.com/KhronosGroup/KTX-Software/releases/) to save .ktx outputs. libKTX is licensed under the Apache 2.0 license.
+
+Includes the RBGCX encoder (https://github.com/richgel999/bc7enc) for the purposes of comparing output. Enable by adding 
+"#define USE_RGBCX_ENCODER" to "dds.c". RGBCX is licensed under the MIT license / public domain license.
 
 The BC encoders at "high" quality setting typically beat RGBCX at hidden quality setting 19 slightly in PSNR.
 
