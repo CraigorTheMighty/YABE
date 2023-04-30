@@ -3,6 +3,8 @@ YABE - Yet Another Block Encoder
 
 Regular C and OpenCL-based encoders for BC1-5 and ETC1/2 aimed at producing extreme quality output at reasonable performance.
 
+Output images are saved as .ktx in the case of ETC1/2, and .ktx and/or .dds in the case of BC1-5. In the case of .dds, files will conform to DX9 DDS files when the format can be represented as a DX9 format in the interests of maximum compatibility, and a DX10 DDS file otherwise.
+
 This started as a tiny project, then grew arms and legs, so please excuse the mess.
 
 - Also, if you're hiring: I'm interested. ;)
