@@ -227,9 +227,9 @@ void System_PrintUsage()
 	ALWAYS_PRINT_NODEC("Usage\n");
 	ALWAYS_PRINT_NODEC("=====\n");
 	ALWAYS_PRINT_NODEC("\n");
-	ALWAYS_PRINT_NODEC("ImageCompressor [options]\n");
+	ALWAYS_PRINT_NODEC("YABE [options]\n");
 	ALWAYS_PRINT_NODEC("\n");
-	ALWAYS_PRINT_NODEC("Example: ImageCompressor -input \"test_image.jpg\" -output \"encoded\" -mode ETC2RGBA8 -mipmap\n");
+	ALWAYS_PRINT_NODEC("Example: YABE -input \"test_image.jpg\" -output \"encoded\" -mode ETC2RGBA8 -mipmap\n");
 	ALWAYS_PRINT_NODEC("\n");
 	ALWAYS_PRINT_NODEC("=======\n");
 	ALWAYS_PRINT_NODEC("Options\n");
