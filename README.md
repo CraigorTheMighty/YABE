@@ -21,9 +21,23 @@ The encoders are fully multithreaded and under normal circumstances will occupy 
 
 On my system, Ryzen 9 5900X with 64GB DDR4-1333, Nvidia GTX 1060 3GB on this test suite of image (https://github.com/MohamedBakrAli/Kodak-Lossless-True-Color-Image-Suite/tree/master/PhotoCD_PCD0992):
 
+|BC1 Encoder|Time|Average Quality (dB)|Hardware|
+|---|---|---|---|
+|RGBCX (Q=19)|63.77s|31.8105|CPU|
+|YABE "High"|15.09s|31.8146|**GPU**|
+|YABE "High"|39.95s|31.8146|CPU|
+|YABE "Best"|21.88s|31.8212|**GPU**|
+|YABE "Best"|95.64s|31.8212|CPU|
 
-
-
+|ETC1 Encoder|Time|Average Quality (dB)|Hardware|
+|---|---|---|---|
+|Crunch (Q="Uber")|66.65s|32.6665|CPU|
+|YABE "Normal"|10.76s|32.6845|**GPU**|
+|YABE "Normal"|23.58s|32.6845|CPU|
+|YABE "High"|16.64s|32.7391|**GPU**|
+|YABE "High"|50.61s|32.7391|CPU|
+|YABE "Best"|20.71s|32.7439|**GPU**|
+|YABE "Best"|105.7s|32.7439|CPU|
 
 Dependencies
 ============
@@ -67,7 +81,7 @@ You _MUST NOT_ enable "warnings as errors". The library still has a lot of warni
 Notes Regarding OpenCL
 ======================
 
-- The OpenCL encoders have been tested on an Nvidia GTX 1060. I'm a solo developer so unfortunately I generally don't have access to various different rigs to perform testing on.
+- The OpenCL encoders have been tested on an Nvidia GTX 1060 and RTX 3060. I'm a solo developer so unfortunately I generally don't have access to various different rigs to perform testing on, except when friends are being Helpful.
 
 - The OpenCL encoders are _very_ complex, and have a habit of exposing the occasional weird driver/compiler bugs. The ETC encoder in particular is a verbatim text copy of the C++ version (with some #defines and whatnot providing abstraction between the two languages), so any bugs that appear in the OpenCL encoder should also be reproducible in the C++ version, which they generally aren't. As such I can only assume driver and/or compiler bugs.
 
