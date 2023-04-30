@@ -3,6 +3,8 @@ YABE - Yet Another Block Encoder
 
 Regular C and OpenCL-based encoders for BC1-5 and ETC1/2 aimed at producing extreme quality output at reasonable performance.
 
+This started as a tiny project, then grew arms and legs, so please excuse the mess.
+
 Quality / Performance
 =====================
 
@@ -38,6 +40,8 @@ On my system, Ryzen 9 5900X with 64GB DDR4-1333, Nvidia GTX 1060 3GB on this tes
 |YABE "High"|50.61s|32.7391|CPU|
 |YABE "Best"|20.71s|32.7439|**GPU**|
 |YABE "Best"|105.7s|32.7439|CPU|
+
+I've yet to test against a state-of-the-art ETC2 encoder, but will update when I do. :)
 
 Dependencies
 ============
@@ -89,4 +93,29 @@ Notes Regarding OpenCL
 
 - On some hardware (specifically Intel HD graphics), the driver doesn't appear to cache results of previous CL program builds, so even loading from a pre-compiled CL binary can result in a VERY long load for the application, up to 5 minutes, whereas on Nvidia/AMD hardware, loading from a binary typically only takes a few milliseconds after the first time. I currently have no plans to work around this, as the only approach I can think of to avoid this is to have the application be a persistent background process.
 
+License
+=======
 
+Mit license. You can pretty much do what you like with this code, but please consider attributing me as the source.
+
+- Also, if you're hiring: I'm interested. ;)
+
+Copyright (c) 2023 Craig Sutherland
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
