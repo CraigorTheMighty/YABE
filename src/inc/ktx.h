@@ -1,1 +1,0 @@
-int KTX_SaveETC(char *output_name, int format, int width, int height, int block_mul);
