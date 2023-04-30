@@ -1,0 +1,1 @@
+int CPU_Encode(device_t *device, image_t *image, codec_e codec, int mip_level, int override_macro_size, uint64_t *kernel_ticks, uint64_t *total_ticks, void *context);
