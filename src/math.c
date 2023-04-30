@@ -1072,7 +1072,7 @@ void Math_PolynomialDeg3Solvef32(float *real_roots, _Fcomplex *complex_roots, in
 		c /= a;
 		d /= a;
 
-		q = (3.0 * c - (b * b)) / 9.0f;
+		q = (3.0f * c - (b * b)) / 9.0f;
 		r = -(27.0f * d) + b * (9.0f * c - 2.0f * (b * b));
 		r /= 54.0f;
 
@@ -1128,10 +1128,10 @@ void Math_PolynomialDeg3Solvef32(float *real_roots, _Fcomplex *complex_roots, in
 void Math_PolynomialDeg3Solvef64(double *real_roots, _Dcomplex *complex_roots, int *num_real_roots, int *num_complex_roots, double a, double b, double c, double d, double e)
 {
 	if (a == 0.0f)
-		Math_PolynomialDeg2Solvef32(real_roots, complex_roots, num_real_roots, num_complex_roots, b, c, d, e);
+		Math_PolynomialDeg2Solvef64(real_roots, complex_roots, num_real_roots, num_complex_roots, b, c, d, e);
 	else if (d == e)
 	{
-		Math_PolynomialDeg2Solvef32(real_roots, complex_roots, num_real_roots, num_complex_roots, a, b, c, 0.0f);
+		Math_PolynomialDeg2Solvef64(real_roots, complex_roots, num_real_roots, num_complex_roots, a, b, c, 0.0f);
 		(*num_real_roots)++;
 		real_roots[*num_real_roots - 1] = 0.0f;
 	}
@@ -1257,7 +1257,7 @@ void Math_PolynomialDeg2Solvef64(double *real_roots, _Dcomplex *complex_roots, i
 
 		c = c - d;
 
-		disc = b*b - 4.0f*a*c;
+		disc = (float)(b*b - 4.0*a*c);
 
 		if (disc == 0.0f)
 		{

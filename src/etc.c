@@ -2189,7 +2189,6 @@ void ETC_EncodeRGBQuality(
         {
             float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
             float mins_maxs_dist[2];
-            float3 temp;
             
             for (i = 0; i < 8; i++)
                 mean = mean + trans_pixel[g_partition_indexes[flipped][partition][i]];
@@ -2228,7 +2227,6 @@ void ETC_EncodeRGBQuality(
         int found_fixed = 0;
         uchar3 proj_mins;
         uchar3 proj_maxs;
-        int fixed_flip = 0;
 #if 1
         if (quality >= CODEC_QUALITY_NORMAL) // redundant, quality is always normal or better in this function
         {
@@ -2838,7 +2836,6 @@ void ETC_EncodeRGBQuality(
             {
                 float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
                 float mins_maxs_dist[2];
-                float3 temp;
 
                 for (i = 0; i < set_count[partition]; i++)
                     mean = mean + trans_pixel[set_indexes[partition][i]];
@@ -3475,7 +3472,6 @@ float ETC_FindBestBaseAlpha(float *alpha, float alpha_mins, float alpha_maxs, fl
     float b = alpha_maxs;
     float c = b - (b - a) * M_INV_GOLDEN_F;
     float d = a + (b - a) * M_INV_GOLDEN_F;
-    float best_error = MAX_INIT_ERROR;
     float fc = 0.0f;
     float fd = 0.0f;
 
@@ -3729,7 +3725,6 @@ float ETC_EvaluateErrorTSingleA1(int *transparency, int is_ypbpr, float3 *trans_
 float ETC_EvaluateErrorTTripleA1(int *transparency, int is_ypbpr, float3 *trans_pixel, uchar3 rgb, int *indexes, int num_indexes)
 {
     int i, mode, j;
-    float dist = 0.0f;
     float3 rgb32f;
     float best_mode_dist;
 
@@ -3782,7 +3777,6 @@ float ETC_EvaluateErrorTTripleA1(int *transparency, int is_ypbpr, float3 *trans_
 float ETC_EvaluateErrorHA1(int *transparency, int is_ypbpr, float3 *trans_pixel, uchar3 rgb, int *indexes, int num_indexes, int mode, int h_index)
 {
     int i, j;
-    float dist = 0.0f;
     float3 rgb32f;
     float current_mode_dist = 0.0f;
     float3 points[2];
@@ -3961,8 +3955,6 @@ void ETC_LeastCostDirectedPathA1(
 
             if (sample.error <= error_target)
                 break;
-
-            int scale = 1;
 
             for (j = 0; j < 27; j++)
                 test_pos[j] = SHORT3(MEMBER(sample.pos_quantised, X), MEMBER(sample.pos_quantised, Y), MEMBER(sample.pos_quantised, Z)) + SHORT3((j % 3) - 1, ((j / 3) % 3) - 1, j/9 - 1);
@@ -4446,7 +4438,6 @@ float ETC_EvaluateErrorTSingleWeighted(int is_ypbpr, float3 *trans_pixel, float 
 float ETC_EvaluateErrorTTripleWeighted(int is_ypbpr, float3 *trans_pixel, float *weight, uchar3 rgb, int *indexes, int num_indexes)
 {
     int i, mode, j;
-    float dist = 0.0f;
     float3 rgb32f;
     float best_mode_dist;
 
@@ -4497,7 +4488,6 @@ float ETC_EvaluateErrorTTripleWeighted(int is_ypbpr, float3 *trans_pixel, float 
 float ETC_EvaluateErrorHWeighted(int is_ypbpr, float3 *trans_pixel, float *weight, uchar3 rgb, int *indexes, int num_indexes, int mode)
 {
     int i, j;
-    float dist = 0.0f;
     float3 rgb32f;
     float current_mode_dist = 0.0f;
     float3 points[2];
@@ -4959,7 +4949,6 @@ void ETC_EncodeRGBWeighted(
         {
             float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
             float mins_maxs_dist[2];
-            float3 temp;
             int pixel_count = 0;
 
             mins_maxs_dist[0] = MAX_INIT_ERROR;
@@ -5014,7 +5003,6 @@ void ETC_EncodeRGBWeighted(
         int found_fixed = 0;
         uchar3 proj_mins;
         uchar3 proj_maxs;
-        int fixed_flip = 0;
 #if 1
         if (quality >= CODEC_QUALITY_NORMAL) // redundant, quality is always normal or better in this function
         {
@@ -5609,7 +5597,6 @@ void ETC_EncodeRGBWeighted(
             {
                 float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
                 float mins_maxs_dist[2];
-                float3 temp;
 
                 for (i = 0; i < set_count[partition]; i++)
                     mean = mean + trans_pixel[set_indexes[partition][i]];
@@ -6219,7 +6206,6 @@ float ETC_FindBestBaseAlphaWeighted(float *alpha, float *weight, float alpha_min
     float b = alpha_maxs;
     float c = b - (b - a) * M_INV_GOLDEN_F;
     float d = a + (b - a) * M_INV_GOLDEN_F;
-    float best_error = MAX_INIT_ERROR;
     float fc = 0.0f;
     float fd = 0.0f;
 
@@ -7000,7 +6986,6 @@ void ETC_EncodeRGBA1WeightedQuality(
         {
             float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
             float mins_maxs_dist[2];
-            float3 temp;
             int pixel_count = 0;
 
             mins_maxs_dist[0] = MAX_INIT_ERROR;
@@ -7347,7 +7332,6 @@ void ETC_EncodeRGBA1WeightedQuality(
         {
             float3 mean = VFLOAT3(0.0f, 0.0f, 0.0f);
             float mins_maxs_dist[2];
-            float3 temp;
             int pixel_count = 0;
 
             for (i = 0; i < set_count[partition]; i++)
@@ -7981,7 +7965,6 @@ void ETC_EncodeETC_CPU(
     __global uchar *block)                       // output data
 {
     int x, y;
-    LONG volatile c = 0;
 
 #if USE_OPENMP
 #pragma omp parallel for private(y) private(x)
@@ -8030,7 +8013,6 @@ int EncodeETCCPU(
 {
     size_t blocks_x = (width + 3) >> 2;
     size_t blocks_y = (height + 3) >> 2;
-    int err = 0;
     size_t bytes_in = (size_t)width * (size_t)height * sizeof(float) * (size_t)4;
     size_t bytes_out = ((size_t)blocks_x * (size_t)blocks_y * (size_t)16) >> 1;
     uint8_t *local_block;
@@ -8046,7 +8028,6 @@ int EncodeETCCPU(
     int scale = (is_alpha && !is_punchthrough) ? 2 : 1;
     int max_dim;
     int is_error = 1;
-    float estimated_throughput = 1.0f;
 
     if (is_alpha && !is_punchthrough)
         bytes_out <<= 1;
@@ -8183,7 +8164,6 @@ int EncodeETCCPU(
         }
     }
     is_error = 0;
-ENCODE_CLEANUP:
 
 #if TEST_OPENCL_ONLY
     Sleep(1000);

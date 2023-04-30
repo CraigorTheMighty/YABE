@@ -1,3 +1,5 @@
+//#define USE_RGBCX_ENCODER
+
 extern float errsum;
 
 #include <windows.h>

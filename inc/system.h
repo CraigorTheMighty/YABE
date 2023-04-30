@@ -3,7 +3,7 @@
 //#define TRACK_OPENCL_RANGE
 
 //#define USE_RGBCX_ENCODER
-#define RGBCX_QUALITY_VALUE		19
+#define RGBCX_QUALITY_VALUE		18
 
 #define DUMP_RAW_IMAGE	0
 
