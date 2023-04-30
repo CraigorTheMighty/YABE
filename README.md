@@ -5,6 +5,8 @@ Regular C and OpenCL-based encoders for BC1-5 and ETC1/2 aimed at producing extr
 
 This started as a tiny project, then grew arms and legs, so please excuse the mess.
 
+- Also, if you're hiring: I'm interested. ;)
+
 Quality / Performance
 =====================
 
@@ -96,9 +98,7 @@ Notes Regarding OpenCL
 License
 =======
 
-Mit license. You can pretty much do what you like with this code, but please consider attributing me as the source.
-
-- Also, if you're hiring: I'm interested. ;)
+MIT license. You can pretty much do what you like with this code, but please consider attributing me as the source.
 
 Copyright (c) 2023 Craig Sutherland
 
