@@ -533,10 +533,6 @@ FINAL_STAGE:
 		}
 	}
 
-
-	Mem_Free(build_log);
-	Mem_Free(path);
-
 	if (!device->is_valid)
 	{
 		ALWAYS_PRINT("Compilation errors during last build.\n");
@@ -544,8 +540,13 @@ FINAL_STAGE:
 			LOG_PRINT("Build log:\n==========\nLength: %i\n\n%s\n", (int)build_log_size, build_log);
 		else
 			LOG_PRINT("No build log.\n");
+		Mem_Free(build_log);
+		Mem_Free(path);
 		return -1;
 	}
+
+	Mem_Free(build_log);
+	Mem_Free(path);
 
 	return 0;
 }

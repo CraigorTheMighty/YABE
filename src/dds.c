@@ -1385,6 +1385,7 @@ int DDS_SaveDDS(char *output_name, int format)
 
 	dds.header.ddspf.dwSize = 32;
 	dds.header.ddspf.dwFlags = DDPF_FOURCC;
+
 	if (DDS_GLFormatIsDX9(format))
 		dds.header.ddspf.dwFourCC = DDS_GLFormatToDX9(format);
 	else

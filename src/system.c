@@ -726,7 +726,7 @@ int main(int argc, char **argvv)
 		ALWAYS_PRINT_NODEC("Error parsing command-line.\n");
 		ALWAYS_PRINT_NODEC("****************************\n");
 		for (i = 0; i < argc; i++)
-			printf("Argument %i: %s\n", i, argv[i]);
+			printf("Argument %i: %s\n", (int)i, argv[i]);
 		error = 1;
 		goto MAIN_EXIT;
 	}
@@ -764,6 +764,9 @@ int main(int argc, char **argvv)
 	ALWAYS_PRINT_NODEC("Input: \"%s\" (%i x %i)\n", g_system.opts.in_filename, width, height);
 	if (Codec_GroupFromCodec(System_ModeToCodecID(g_system.opts.encode_mode)) == CODEC_GROUP_BCN)
 	{
+		if (!g_system.opts.save_dds)
+			g_system.opts.save_ktx = 1;
+
 		ALWAYS_PRINT_NODEC("Output: ");
 		if (g_system.opts.save_ktx)
 			ALWAYS_PRINT_NODEC("\"%s\"", g_system.opts.out_filename);

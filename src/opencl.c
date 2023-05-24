@@ -545,6 +545,8 @@ int CL_CompileCodec(device_t *device, cl_program *program, char *source, int *is
 
 FINAL_STAGE:
 
+	Mem_Free(buildlog);
+
 	return error;
 }
 

@@ -172,7 +172,6 @@ void DDS_BlockCovariancePartition3DPreCalcMeanf32(int max_partitions, mat3x3f32_
 {
 	int i, j, k, m;
 	float val[3][3][3] = {0.0f};
-	float count[3] = {0};
 
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
@@ -443,8 +442,6 @@ uint32_t MiniFloat_From32F(float x, uint8_t is_signed, uint8_t exponent_bits, ui
 void DDS_WriteBits(uint8_t *block, uint32_t x, int start_bit, int num_bits)
 {
 	int i = 0;
-	int lmask = (1 << (start_bit & 0x07));
-	int umask = (1 << (num_bits & 0x07));
 
 	if (num_bits == 0)
 		return;
@@ -647,9 +644,9 @@ mat3x3f32_t DDS_BlockCovariance3Df32(float *pixel4x4_rgba, float *mean, float al
 	double val[3][3] = {0.0};
 	double count = 0;
 
-	mean[0] = 0.0;
-	mean[1] = 0.0;
-	mean[2] = 0.0;
+	mean[0] = 0.0f;
+	mean[1] = 0.0f;
+	mean[2] = 0.0f;
 
 	for (k = 0; k < 4; k++)
 		for (m = 0; m < 4; m++)

@@ -284,11 +284,11 @@ short3 operator*(short3 a, short b)
 
 #define floor                   floorf32
 
-#define VFLOAT4(a, b, c, d)		_VFLOAT4((float)a, (float)b, (float)c, (float)d)
-#define VFLOAT3(a, b, c)		_VFLOAT3((float)a, (float)b, (float)c)
-#define UCHAR3(a, b, c)			_UCHAR3((uchar)a, (uchar)b, (uchar)c)
-#define SHORT3(a, b, c)			_SHORT3((short)a, (short)b, (short)c)
-#define INT3(a, b, c)			_INT3((int)a, (int)b, (int)c)
+#define VFLOAT4(a, b, c, d)		_VFLOAT4((float)(a), (float)(b), (float)(c), (float)(d))
+#define VFLOAT3(a, b, c)		_VFLOAT3((float)(a), (float)(b), (float)(c))
+#define UCHAR3(a, b, c)			_UCHAR3((uchar)(a), (uchar)(b), (uchar)(c))
+#define SHORT3(a, b, c)			_SHORT3((short)(a), (short)(b), (short)(c))
+#define INT3(a, b, c)			_INT3((int)(a), (int)(b), (int)(c))
 
 #pragma OPENCL EXTENSION cl_khr_byte_addressable_store : enable
 
@@ -520,8 +520,6 @@ static void ETC_PackBlockReverseOrder(__global uchar *out_block, uchar *in_block
 static void ETC_WriteBits(uchar *block, uint x, int start_bit, int num_bits)
 {
     int i = 0;
-    int lmask = (1 << (start_bit & 0x07));
-    int umask = (1 << (num_bits & 0x07));
 
     DEBUG_PRINTF(("writing %u of len %i to %i\n", x, num_bits, start_bit));
 
@@ -543,7 +541,7 @@ uchar ETC_RGBRoundTo7Bit(uchar v)
     temp >>= 1;
     temp <<= 1;
     temp |= temp >> 7;
-    v = temp;
+    v = UCHAR(temp);
 
     return v;
 }
@@ -554,7 +552,7 @@ uchar ETC_RGBRoundTo6Bit(uchar v)
     temp >>= 2;
     temp <<= 2;
     temp |= temp >> 6;
-    v = temp;
+    v = UCHAR(temp);
 
     return v;
 }
@@ -565,7 +563,7 @@ uchar ETC_RGBRoundTo5Bit(uchar v)
     temp >>= 3;
     temp <<= 3;
     temp |= temp >> 5;
-    v = temp;
+    v = UCHAR(temp);
 
     return v;
 }
@@ -576,7 +574,7 @@ uchar ETC_RGBRoundTo4Bit(uchar v)
     temp >>= 4;
     temp <<= 4;
     temp |= temp >> 4;
-    v = temp;
+    v = UCHAR(temp);
 
     return v;
 }
@@ -615,34 +613,34 @@ uchar3 ETC_RGBRoundVecTo4Bit(uchar3 v)
 
 uchar ETC_ExpandTo7Bit(uchar v)
 {
-    int temp = v;
+    uint temp = v;
     temp <<= 1;
     temp |= temp >> 7;
-    v = temp;
+    v = UCHAR(temp);
     return v;
 }
 uchar ETC_ExpandTo6Bit(uchar v)
 {
-    int temp = v;
+    uint temp = v;
     temp <<= 2;
     temp |= temp >> 6;
-    v = temp;
+    v = UCHAR(temp);
     return v;
 }
 uchar ETC_ExpandTo5Bit(uchar v)
 {
-    int temp = v;
+    uint temp = v;
     temp <<= 3;
     temp |= temp >> 5;
-    v = temp;
+    v = UCHAR(temp);
     return v;
 }
 uchar ETC_ExpandTo4Bit(uchar v)
 {
-    int temp = v;
+    uint temp = v;
     temp <<= 4;
     temp |= temp >> 4;
-    v = temp;
+    v = UCHAR(temp);
     return v;
 }
 
@@ -773,7 +771,6 @@ float ETC_EvaluateErrorTSingle(int is_ypbpr, float3 *trans_pixel, uchar3 rgb, in
 float ETC_EvaluateErrorTTriple(int is_ypbpr, float3 *trans_pixel, uchar3 rgb, int *indexes, int num_indexes)
 {
     int i, mode, j;
-    float dist = 0.0f;
     float3 rgb32f;
 
     //DEBUG_PRINTF(("trans_pixel / indexes / num_indexes: 0x%p 0x%p %i\n", trans_pixel, indexes, num_indexes));
@@ -828,7 +825,6 @@ float ETC_EvaluateErrorTTriple(int is_ypbpr, float3 *trans_pixel, uchar3 rgb, in
 float ETC_EvaluateErrorH(int is_ypbpr, float3 *trans_pixel, uchar3 rgb, int *indexes, int num_indexes, int mode)
 {
     int i, j;
-    float dist = 0.0f;
     float3 rgb32f;
     float current_mode_dist = 0.0f;
     float3 points[2];
@@ -1142,7 +1138,7 @@ void ETC_LeastCostDirectedPath(
         int terminate_count = 0;
 
         ETC_AddSampleToList(sample_list_entries, &sample_list[0], sample);
-        DEBUG_PRINTF(("function: %i sample pos: %i %i %i sample error: %f trans_pixel: 0x%p partition_indexes: 0x%p indexes: 0x%p num_indexes: %i mode: %i\n", evaluate_cb_fp, MEMBER(sample.pos_quantised, X)), MEMBER(sample.pos_quantised, Y), MEMBER(sample.pos_quantised, Z), sample.error, trans_pixel, pathing_params->partition_indexes, pathing_params->indexes, pathing_params->num_indexes, pathing_params->mode);
+        DEBUG_PRINTF(("function: %i sample pos: %i %i %i sample error: %f trans_pixel: 0x%p partition_indexes: 0x%p indexes: 0x%p num_indexes: %i mode: %i\n", evaluate_cb_fp, MEMBER(sample.pos_quantised, X), MEMBER(sample.pos_quantised, Y), MEMBER(sample.pos_quantised, Z), sample.error, trans_pixel, pathing_params->partition_indexes, pathing_params->indexes, pathing_params->num_indexes, pathing_params->mode));
 
         if (sample.error <= error_target)
         {
@@ -1425,7 +1421,7 @@ void ETC_EncodeRGBFast(
     float4 *pixel,
     __global uchar *block)
 {
-    int i, j, table, n;
+    int i, j, table;
     float3 trans_pixel[16];
     int is_delta;
     int is_flipped;
@@ -1764,7 +1760,6 @@ void ETC_EncodeRGBFast(
             float3 points[3];
             int3 points_i32[3];
             float index_best_dist[3];
-            float best_dist = 0.0f;
             int best_twiddle[3][3];
             int index;
             int twiddle0;
@@ -1830,17 +1825,17 @@ void ETC_EncodeRGBFast(
                         if (comb & 0xFFFFFF00)
                             continue;
 
-                        ppoints[0][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], X) + twiddle0 * 4));
-                        ppoints[0][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], X) + twiddle1 * 4));
-                        ppoints[0][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], X) + twiddle2 * 4));
+                        ppoints[0][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + twiddle0 * 4));
+                        ppoints[0][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + twiddle1 * 4));
+                        ppoints[0][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + twiddle2 * 4));
 
-                        ppoints[1][0] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[0], Y) + twiddle0 * 2));
-                        ppoints[1][1] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[1], Y) + twiddle1 * 2));
-                        ppoints[1][2] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[2], Y) + twiddle2 * 2));
+                        ppoints[1][0] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + twiddle0 * 2));
+                        ppoints[1][1] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + twiddle1 * 2));
+                        ppoints[1][2] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + twiddle2 * 2));
 
-                        ppoints[2][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], Z) + twiddle0 * 4));
-                        ppoints[2][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], Z) + twiddle1 * 4));
-                        ppoints[2][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], Z) + twiddle2 * 4));
+                        ppoints[2][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + twiddle0 * 4));
+                        ppoints[2][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + twiddle1 * 4));
+                        ppoints[2][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + twiddle2 * 4));
 
                         comp_err[0] = 0.0f;
                         comp_err[1] = 0.0f;
@@ -1886,9 +1881,9 @@ void ETC_EncodeRGBFast(
                 found_mode = 1;
                 best_mode = ETC_ENC_MODE_PLANAR;
 
-                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], X) + best_twiddle[0][0]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[0], Y) + best_twiddle[1][0]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], Z) + best_twiddle[2][0]));
-                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], X) + best_twiddle[0][1]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[1], Y) + best_twiddle[1][1]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], Z) + best_twiddle[2][1]));
-                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], X) + best_twiddle[0][2]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[2], Y) + best_twiddle[1][2]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], Z) + best_twiddle[2][2]));
+                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + best_twiddle[0][0])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + best_twiddle[1][0])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + best_twiddle[2][0])));
+                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + best_twiddle[0][1])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + best_twiddle[1][1])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + best_twiddle[2][1])));
+                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + best_twiddle[0][2])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + best_twiddle[1][2])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + best_twiddle[2][2])));
             }
         }
     }
@@ -1963,13 +1958,13 @@ void ETC_EncodeRGBFast(
 
         if (min_rd + min_r < 0)
         {
-            r = min_r;
-            rd = min_rd;
+            r = UCHAR(min_r);
+            rd = UCHAR(min_rd);
         }
         else
         {
-            r = max_r;
-            rd = max_rd;
+            r = UCHAR(max_r);
+            rd = UCHAR(max_rd);
         }
         //printf("err: %i: params_th.rgb[0|2] %3u %3u %3u, %3u %3u %3u, table: %i\n", best_mode, MEMBER(params_th.rgb[0], X), MEMBER(params_th.rgb[0], Y), MEMBER(params_th.rgb[0], Z), MEMBER(params_th.rgb[1], X), MEMBER(params_th.rgb[1], Y), MEMBER(params_th.rgb[1], Z), params_th.table);
 
@@ -2012,13 +2007,13 @@ void ETC_EncodeRGBFast(
         int rd;
         if (min_gd + min_g < 0)
         {
-            g = min_g;
-            gd = min_gd;
+            g = UCHAR(min_g);
+            gd = UCHAR(min_gd);
         }
         else
         {
-            g = max_g;
-            gd = max_gd;
+            g = UCHAR(max_g);
+            gd = UCHAR(max_gd);
         }
 
         rd = MEMBER(params_th.rgb[0], Y) >> 5;
@@ -2176,12 +2171,6 @@ void ETC_EncodeRGBQuality(
         MEMBER(trans_pixel[i], Z) = MEMBER(pixel[i], Z);
     }
     DEBUG_PRINTF(("trans_pixel: 0x%p\n", trans_pixel));
-    for (int i = 0; i < SAMPLE_LIST_SIZE0; i++)
-        for (int j = 0; j < SAMPLE_LIST_SIZE1; j++)
-            for (int k = 0; k < SAMPLE_LIST_SIZE2; k++)
-            {
-                DEBUG_PRINTF(("sample_list[%i][%i][%i]: 0x%p\n", i, j, k, &sample_list[i][j][k]));
-            }
 
     for (flipped = 0; flipped < 2; flipped++)
     {
@@ -2293,9 +2282,9 @@ void ETC_EncodeRGBQuality(
                 {
                     uchar3 l0_quant;
 
-                    MEMBER(l0_quant, X) = MEMBER(mean_quant[flipped][0], X) + ip0;
-                    MEMBER(l0_quant, Y) = MEMBER(mean_quant[flipped][0], Y) + ip0;
-                    MEMBER(l0_quant, Z) = MEMBER(mean_quant[flipped][0], Z) + ip0;
+                    MEMBER(l0_quant, X) = UCHAR(MEMBER(mean_quant[flipped][0], X) + ip0);
+                    MEMBER(l0_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][0], Y) + ip0);
+                    MEMBER(l0_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][0], Z) + ip0);
 
                     for (ip1 = min_index[flipped][1]; ip1 <= max_index[flipped][1]; ip1++)
                     {
@@ -2303,9 +2292,9 @@ void ETC_EncodeRGBQuality(
                         int dist[3];
                         float local_error;
 
-                        MEMBER(l1_quant, X) = MEMBER(mean_quant[flipped][1], X) + ip1;
-                        MEMBER(l1_quant, Y) = MEMBER(mean_quant[flipped][1], Y) + ip1;
-                        MEMBER(l1_quant, Z) = MEMBER(mean_quant[flipped][1], Z) + ip1;
+                        MEMBER(l1_quant, X) = UCHAR(MEMBER(mean_quant[flipped][1], X) + ip1);
+                        MEMBER(l1_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][1], Y) + ip1);
+                        MEMBER(l1_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][1], Z) + ip1);
 
                         dist[0] = (int)MEMBER(l1_quant, X) - (int)MEMBER(l0_quant, X);
                         dist[1] = (int)MEMBER(l1_quant, Y) - (int)MEMBER(l0_quant, Y);
@@ -2407,12 +2396,12 @@ void ETC_EncodeRGBQuality(
                 else if (quality > CODEC_QUALITY_NORMAL) // searching entire space on BEST tends to give values that can't be represented by delta encodings
                     offset = 24.0f;
 
-                MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3;
+                MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3);
 
                 sample.pos_quantised = proj_mins;
                 DEBUG_PRINTF(("trans_pixel: 0x%p\n", trans_pixel));
@@ -2603,9 +2592,9 @@ void ETC_EncodeRGBQuality(
                         uchar3 l0_quant;
                         float err;
 
-                        MEMBER(l0_quant, X) = MEMBER(mean_quant[flipped][partition], X) + ip0;
-                        MEMBER(l0_quant, Y) = MEMBER(mean_quant[flipped][partition], Y) + ip0;
-                        MEMBER(l0_quant, Z) = MEMBER(mean_quant[flipped][partition], Z) + ip0;
+                        MEMBER(l0_quant, X) = UCHAR(MEMBER(mean_quant[flipped][partition], X) + ip0);
+                        MEMBER(l0_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][partition], Y) + ip0);
+                        MEMBER(l0_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][partition], Z) + ip0);
 
                         err = ETC_EvaluateError(is_ypbpr, trans_pixel, ETC_RGBExpandVecTo4Bit(l0_quant), &g_partition_indexes[flipped][partition][0]);
 
@@ -2777,12 +2766,12 @@ void ETC_EncodeRGBQuality(
 
                 if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                 {
-                    MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                    MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                 }
                 else
                 {
@@ -2892,12 +2881,12 @@ void ETC_EncodeRGBQuality(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -2916,12 +2905,12 @@ void ETC_EncodeRGBQuality(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -2980,12 +2969,12 @@ void ETC_EncodeRGBQuality(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -3135,17 +3124,17 @@ void ETC_EncodeRGBQuality(
                         if (comb & 0xFFFFFF00)
                             continue;
 
-                        ppoints[0][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], X) + twiddle0 * 4));
-                        ppoints[0][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], X) + twiddle1 * 4));
-                        ppoints[0][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], X) + twiddle2 * 4));
+                        ppoints[0][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + twiddle0 * 4));
+                        ppoints[0][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + twiddle1 * 4));
+                        ppoints[0][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + twiddle2 * 4));
 
-                        ppoints[1][0] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[0], Y) + twiddle0 * 2));
-                        ppoints[1][1] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[1], Y) + twiddle1 * 2));
-                        ppoints[1][2] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[2], Y) + twiddle2 * 2));
+                        ppoints[1][0] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + twiddle0 * 2));
+                        ppoints[1][1] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + twiddle1 * 2));
+                        ppoints[1][2] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + twiddle2 * 2));
 
-                        ppoints[2][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], Z) + twiddle0 * 4));
-                        ppoints[2][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], Z) + twiddle1 * 4));
-                        ppoints[2][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], Z) + twiddle2 * 4));
+                        ppoints[2][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + twiddle0 * 4));
+                        ppoints[2][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + twiddle1 * 4));
+                        ppoints[2][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + twiddle2 * 4));
 
                         comp_err[0] = 0.0f;
                         comp_err[1] = 0.0f;
@@ -3186,9 +3175,9 @@ void ETC_EncodeRGBQuality(
             best_dist = index_best_dist[0] + index_best_dist[1] + index_best_dist[2];
             if (best_dist < best_total_error)
             {
-                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], X) + best_twiddle[0][0]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[0], Y) + best_twiddle[1][0]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], Z) + best_twiddle[2][0]));
-                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], X) + best_twiddle[0][1]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[1], Y) + best_twiddle[1][1]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], Z) + best_twiddle[2][1]));
-                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], X) + best_twiddle[0][2]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[2], Y) + best_twiddle[1][2]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], Z) + best_twiddle[2][2]));
+                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + best_twiddle[0][0])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + best_twiddle[1][0])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + best_twiddle[2][0])));
+                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + best_twiddle[0][1])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + best_twiddle[1][1])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + best_twiddle[2][1])));
+                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + best_twiddle[0][2])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + best_twiddle[1][2])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + best_twiddle[2][2])));
 
                 enc_mode = ETC_ENC_MODE_PLANAR;
 
@@ -3257,13 +3246,13 @@ void ETC_EncodeRGBQuality(
 
             if (min_rd + min_r < 0)
             {
-                r = min_r;
-                rd = min_rd;
+                r = UCHAR(min_r);
+                rd = UCHAR(min_rd);
             }
             else
             {
-                r = max_r;
-                rd = max_rd;
+                r = UCHAR(max_r);
+                rd = UCHAR(max_rd);
             }
 
             ETC_WriteBits(local_block, r, 27, 5);
@@ -3301,13 +3290,13 @@ void ETC_EncodeRGBQuality(
             int rd;
             if (min_gd + min_g < 0)
             {
-                g = min_g;
-                gd = min_gd;
+                g = UCHAR(min_g);
+                gd = UCHAR(min_gd);
             }
             else
             {
-                g = max_g;
-                gd = max_gd;
+                g = UCHAR(max_g);
+                gd = UCHAR(max_gd);
             }
 
             rd = MEMBER(params_th.rgb[0], Y) >> 5;
@@ -4932,7 +4921,6 @@ void ETC_EncodeRGBWeighted(
     etc_planar_mode_params_t params_planar;
     etc_pathing_params_t pathing_params;
     uchar local_block[8];
-    int step = 1;
     float3 projected_mins[2][2]; // delta/non-delta, flipped, partition
     float3 projected_maxs[2][2];
 
@@ -5068,9 +5056,9 @@ void ETC_EncodeRGBWeighted(
                 {
                     uchar3 l0_quant;
 
-                    MEMBER(l0_quant, X) = MEMBER(mean_quant[flipped][0], X) + ip0;
-                    MEMBER(l0_quant, Y) = MEMBER(mean_quant[flipped][0], Y) + ip0;
-                    MEMBER(l0_quant, Z) = MEMBER(mean_quant[flipped][0], Z) + ip0;
+                    MEMBER(l0_quant, X) = UCHAR(MEMBER(mean_quant[flipped][0], X) + ip0);
+                    MEMBER(l0_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][0], Y) + ip0);
+                    MEMBER(l0_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][0], Z) + ip0);
 
                     for (ip1 = min_index[flipped][1]; ip1 <= max_index[flipped][1]; ip1++)
                     {
@@ -5078,9 +5066,9 @@ void ETC_EncodeRGBWeighted(
                         int dist[3];
                         float local_error;
 
-                        MEMBER(l1_quant, X) = MEMBER(mean_quant[flipped][1], X) + ip1;
-                        MEMBER(l1_quant, Y) = MEMBER(mean_quant[flipped][1], Y) + ip1;
-                        MEMBER(l1_quant, Z) = MEMBER(mean_quant[flipped][1], Z) + ip1;
+                        MEMBER(l1_quant, X) = UCHAR(MEMBER(mean_quant[flipped][1], X) + ip1);
+                        MEMBER(l1_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][1], Y) + ip1);
+                        MEMBER(l1_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][1], Z) + ip1);
 
                         dist[0] = (int)MEMBER(l1_quant, X) - (int)MEMBER(l0_quant, X);
                         dist[1] = (int)MEMBER(l1_quant, Y) - (int)MEMBER(l0_quant, Y);
@@ -5181,12 +5169,12 @@ void ETC_EncodeRGBWeighted(
                 else if (quality > CODEC_QUALITY_NORMAL) // searching entire space on BEST tends to give values that can't be represented by delta encodings
                     offset = 24.0f;
 
-                MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3;
+                MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3);
 
                 sample.pos_quantised = proj_mins;
                 pathing_params.partition_indexes = &g_partition_indexes[flipped][partition][0];
@@ -5376,9 +5364,9 @@ void ETC_EncodeRGBWeighted(
                         uchar3 l0_quant;
                         float err;
 
-                        MEMBER(l0_quant, X) = MEMBER(mean_quant[flipped][partition], X) + ip0;
-                        MEMBER(l0_quant, Y) = MEMBER(mean_quant[flipped][partition], Y) + ip0;
-                        MEMBER(l0_quant, Z) = MEMBER(mean_quant[flipped][partition], Z) + ip0;
+                        MEMBER(l0_quant, X) = UCHAR(MEMBER(mean_quant[flipped][partition], X) + ip0);
+                        MEMBER(l0_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][partition], Y) + ip0);
+                        MEMBER(l0_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][partition], Z) + ip0);
 
                         err = ETC_EvaluateErrorWeighted(is_ypbpr, trans_pixel, weight, ETC_RGBExpandVecTo4Bit(l0_quant), &g_partition_indexes[flipped][partition][0]);
 
@@ -5541,12 +5529,12 @@ void ETC_EncodeRGBWeighted(
 
                 if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                 {
-                    MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                    MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                 }
                 else
                 {
@@ -5647,12 +5635,12 @@ void ETC_EncodeRGBWeighted(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -5668,12 +5656,12 @@ void ETC_EncodeRGBWeighted(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -5730,12 +5718,12 @@ void ETC_EncodeRGBWeighted(
 
                     if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                     {
-                        MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                        MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                        MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                        MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                     }
                     else
                     {
@@ -5887,17 +5875,17 @@ void ETC_EncodeRGBWeighted(
                         if (comb & 0xFFFFFF00)
                             continue;
 
-                        ppoints[0][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], X) + twiddle0 * 4));
-                        ppoints[0][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], X) + twiddle1 * 4));
-                        ppoints[0][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], X) + twiddle2 * 4));
+                        ppoints[0][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + twiddle0 * 4));
+                        ppoints[0][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + twiddle1 * 4));
+                        ppoints[0][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + twiddle2 * 4));
 
-                        ppoints[1][0] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[0], Y) + twiddle0 * 2));
-                        ppoints[1][1] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[1], Y) + twiddle1 * 2));
-                        ppoints[1][2] = ETC_RGBRoundTo7Bit((MEMBER(points_i32[2], Y) + twiddle2 * 2));
+                        ppoints[1][0] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + twiddle0 * 2));
+                        ppoints[1][1] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + twiddle1 * 2));
+                        ppoints[1][2] = ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + twiddle2 * 2));
 
-                        ppoints[2][0] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[0], Z) + twiddle0 * 4));
-                        ppoints[2][1] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[1], Z) + twiddle1 * 4));
-                        ppoints[2][2] = ETC_RGBRoundTo6Bit((MEMBER(points_i32[2], Z) + twiddle2 * 4));
+                        ppoints[2][0] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + twiddle0 * 4));
+                        ppoints[2][1] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + twiddle1 * 4));
+                        ppoints[2][2] = ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + twiddle2 * 4));
 
                         comp_err[0] = 0.0f;
                         comp_err[1] = 0.0f;
@@ -5939,9 +5927,9 @@ void ETC_EncodeRGBWeighted(
 
             if (best_dist < best_total_error)
             {
-                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], X) + best_twiddle[0][0]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[0], Y) + best_twiddle[1][0]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[0], Z) + best_twiddle[2][0]));
-                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], X) + best_twiddle[0][1]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[1], Y) + best_twiddle[1][1]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[1], Z) + best_twiddle[2][1]));
-                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], X) + best_twiddle[0][2]), ETC_RGBRoundTo7Bit(MEMBER(points_i32[2], Y) + best_twiddle[1][2]), ETC_RGBRoundTo6Bit(MEMBER(points_i32[2], Z) + best_twiddle[2][2]));
+                params_planar.rgb[0] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], X) + best_twiddle[0][0])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[0], Y) + best_twiddle[1][0])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[0], Z) + best_twiddle[2][0])));
+                params_planar.rgb[1] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], X) + best_twiddle[0][1])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[1], Y) + best_twiddle[1][1])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[1], Z) + best_twiddle[2][1])));
+                params_planar.rgb[2] = UCHAR3(ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], X) + best_twiddle[0][2])), ETC_RGBRoundTo7Bit(UCHAR(MEMBER(points_i32[2], Y) + best_twiddle[1][2])), ETC_RGBRoundTo6Bit(UCHAR(MEMBER(points_i32[2], Z) + best_twiddle[2][2])));
 
                 enc_mode = ETC_ENC_MODE_PLANAR;
 
@@ -6007,13 +5995,13 @@ void ETC_EncodeRGBWeighted(
 
             if (min_rd + min_r < 0)
             {
-                r = min_r;
-                rd = min_rd;
+                r = UCHAR(min_r);
+                rd = UCHAR(min_rd);
             }
             else
             {
-                r = max_r;
-                rd = max_rd;
+                r = UCHAR(max_r);
+                rd = UCHAR(max_rd);
             }
 
             ETC_WriteBits(local_block, r, 27, 5);
@@ -6052,13 +6040,13 @@ void ETC_EncodeRGBWeighted(
 
             if (min_gd + min_g < 0)
             {
-                g = min_g;
-                gd = min_gd;
+                g = UCHAR(min_g);
+                gd = UCHAR(min_gd);
             }
             else
             {
-                g = max_g;
-                gd = max_gd;
+                g = UCHAR(max_g);
+                gd = UCHAR(max_gd);
             }
 
             rd = MEMBER(params_th.rgb[0], Y) >> 5;
@@ -6364,12 +6352,10 @@ void ETC_EncodeRGBA1WeightedFast(
     float *weight,
     __global uchar *block)
 {
-    int i, j, table, n;
+    int i, table;
     float3 trans_pixel[16];
     int is_delta;
     int is_flipped;
-    int is_best_delta = 0;
-    float best_total_error = MAX_INIT_ERROR;
     int enc_mode;
     etc_partition_mode_params_t params_partition;
     etc_th_mode_params_t params_th;
@@ -6815,13 +6801,13 @@ void ETC_EncodeRGBA1WeightedFast(
 
         if (min_rd + min_r < 0)
         {
-            r = min_r;
-            rd = min_rd;
+            r = UCHAR(min_r);
+            rd = UCHAR(min_rd);
         }
         else
         {
-            r = max_r;
-            rd = max_rd;
+            r = UCHAR(max_r);
+            rd = UCHAR(max_rd);
         }
 
         ETC_WriteBits(local_block, r, 27, 5);
@@ -6863,13 +6849,13 @@ void ETC_EncodeRGBA1WeightedFast(
 
         if (min_gd + min_g < 0)
         {
-            g = min_g;
-            gd = min_gd;
+            g = UCHAR(min_g);
+            gd = UCHAR(min_gd);
         }
         else
         {
-            g = max_g;
-            gd = max_gd;
+            g = UCHAR(max_g);
+            gd = UCHAR(max_gd);
         }
 
         rd = MEMBER(params_th.rgb[0], Y) >> 5;
@@ -7098,9 +7084,9 @@ void ETC_EncodeRGBA1WeightedQuality(
                 {
                     uchar3 l0_quant;
 
-                    MEMBER(l0_quant, X) = MEMBER(mean_quant[flipped][0], X) + ip0;
-                    MEMBER(l0_quant, Y) = MEMBER(mean_quant[flipped][0], Y) + ip0;
-                    MEMBER(l0_quant, Z) = MEMBER(mean_quant[flipped][0], Z) + ip0;
+                    MEMBER(l0_quant, X) = UCHAR(MEMBER(mean_quant[flipped][0], X) + ip0);
+                    MEMBER(l0_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][0], Y) + ip0);
+                    MEMBER(l0_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][0], Z) + ip0);
 
                     for (ip1 = min_index[flipped][1]; ip1 <= max_index[flipped][1]; ip1++)
                     {
@@ -7108,9 +7094,9 @@ void ETC_EncodeRGBA1WeightedQuality(
                         int dist[3];
                         float local_error;
 
-                        MEMBER(l1_quant, X) = MEMBER(mean_quant[flipped][1], X) + ip1;
-                        MEMBER(l1_quant, Y) = MEMBER(mean_quant[flipped][1], Y) + ip1;
-                        MEMBER(l1_quant, Z) = MEMBER(mean_quant[flipped][1], Z) + ip1;
+                        MEMBER(l1_quant, X) = UCHAR(MEMBER(mean_quant[flipped][1], X) + ip1);
+                        MEMBER(l1_quant, Y) = UCHAR(MEMBER(mean_quant[flipped][1], Y) + ip1);
+                        MEMBER(l1_quant, Z) = UCHAR(MEMBER(mean_quant[flipped][1], Z) + ip1);
 
                         dist[0] = (int)MEMBER(l1_quant, X) - (int)MEMBER(l0_quant, X);
                         dist[1] = (int)MEMBER(l1_quant, Y) - (int)MEMBER(l0_quant, Y);
@@ -7212,12 +7198,12 @@ void ETC_EncodeRGBA1WeightedQuality(
                 else if (quality > CODEC_QUALITY_NORMAL) // searching entire space on BEST tends to give values that can't be represented by delta encodings
                     offset = 24.0f;
 
-                MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3;
-                MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3;
+                MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], X) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Y) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[flipped][partition], Z) - offset, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], X) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Y) + offset + 3, 0.0f, 255.0f)) >> 3);
+                MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[flipped][partition], Z) + offset + 3, 0.0f, 255.0f)) >> 3);
 
                 sample.pos_quantised = proj_mins;
                 pathing_params.partition_indexes = &g_partition_indexes[flipped][partition][0];
@@ -7395,12 +7381,12 @@ void ETC_EncodeRGBA1WeightedQuality(
 
                 if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                 {
-                    MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                    MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                 }
                 else
                 {
@@ -7416,12 +7402,12 @@ void ETC_EncodeRGBA1WeightedQuality(
 
                 if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                 {
-                    MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                    MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], X) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Y) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][(flipped + 1) % 2], Z) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][(flipped + 1) % 2], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                 }
                 else
                 {
@@ -7476,12 +7462,12 @@ void ETC_EncodeRGBA1WeightedQuality(
 
                 if ((quality == CODEC_QUALITY_NORMAL) || (quality == CODEC_QUALITY_HIGH))
                 {
-                    MEMBER(proj_mins, X) = ((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Y) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_mins, Z) = ((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, X) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Y) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4;
-                    MEMBER(proj_maxs, Z) = ((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4;
+                    MEMBER(proj_mins, X) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], X) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Y) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Y) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_mins, Z) = UCHAR(((uint)clamp(MEMBER(projected_mins[0][flipped], Z) - offset, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, X) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], X) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Y) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Y) + offset + 7, 0.0f, 255.0f)) >> 4);
+                    MEMBER(proj_maxs, Z) = UCHAR(((uint)clamp(MEMBER(projected_maxs[0][flipped], Z) + offset + 7, 0.0f, 255.0f)) >> 4);
                 }
                 else
                 {
@@ -7602,13 +7588,13 @@ void ETC_EncodeRGBA1WeightedQuality(
 
         if (min_rd + min_r < 0)
         {
-            r = min_r;
-            rd = min_rd;
+            r = UCHAR(min_r);
+            rd = UCHAR(min_rd);
         }
         else
         {
-            r = max_r;
-            rd = max_rd;
+            r = UCHAR(max_r);
+            rd = UCHAR(max_rd);
         }
 
         ETC_WriteBits(local_block, r, 27, 5);
@@ -7650,13 +7636,13 @@ void ETC_EncodeRGBA1WeightedQuality(
 
         if (min_gd + min_g < 0)
         {
-            g = min_g;
-            gd = min_gd;
+            g = UCHAR(min_g);
+            gd = UCHAR(min_gd);
         }
         else
         {
-            g = max_g;
-            gd = max_gd;
+            g = UCHAR(max_g);
+            gd = UCHAR(max_gd);
         }
 
         rd = MEMBER(params_th.rgb[0], Y) >> 5;
@@ -8088,15 +8074,15 @@ int EncodeETCCPU(
             unsigned int n[16] = 
             {
                 ETC_ALLOWED_MODES, // allowed modes
-                is_ypbpr, // is_ypbpr
-                is_etc2, 
-                is_alpha, // is_alpha
-                is_punchthrough, // is_punchthrough
+                (unsigned int)is_ypbpr, // is_ypbpr
+                (unsigned int)is_etc2, 
+                (unsigned int)is_alpha, // is_alpha
+                (unsigned int)is_punchthrough, // is_punchthrough
                 REFINE_RGB_SEARCH, // refine_rgb_search
                 1, // refine_alpha_search
                 1, // alpha_search_radius (valid range 0 -> 7)
-                local_width, 
-                local_height
+                (unsigned int)local_width, 
+                (unsigned int)local_height
             };
             float err_targ[3] = 
             {
@@ -8124,8 +8110,8 @@ int EncodeETCCPU(
 
             ETC_EncodeETC_CPU(
                 quality,
-                global[0],
-                global[1],
+                (int)global[0],
+                (int)global[1],
                 ETC_ALLOWED_MODES,
                 alpha_cutoff,
                 rgb_error_target,

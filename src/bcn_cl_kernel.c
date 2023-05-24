@@ -1645,7 +1645,7 @@ char *g_bcn_kernel_source =
 "// entry 1 is endpoint 1.\n"\
 "// entry 2 is the index of the next closest colour < the current colour. If there is no colour < the current colour, this will equal the current index.\n"\
 "// entry 3 is the index of the next closest colour > the current colour. If there is no colour > the current colour, this will equal the current index.\n"\
-"static int g_dds_bestfitmap5[256][2][4] =\n"\
+"__constant static int g_dds_bestfitmap5[256][2][4] =\n"\
 "{\n"\
 "	{{ 0,  0,   0,   2} /* colour   0, closest below   0, closest above   3 */, { 0,  0,   0,   3}  /* colour   0, closest below   0, closest above   4 */}, // index   0\n"\
 "	{{ 0,  0,   1,   2} /* colour   0, closest below   0, closest above   3 */, { 0,  0,   1,   3}  /* colour   0, closest below   0, closest above   4 */}, // index   1\n"\
@@ -1909,7 +1909,7 @@ char *g_bcn_kernel_source =
 "// entry 1 is endpoint 1.\n"\
 "// entry 2 is the index of the next closest colour < the current colour. If there is no colour < the current colour, this will equal the current index.\n"\
 "// entry 3 is the index of the next closest colour > the current colour. If there is no colour > the current colour, this will equal the current index.\n"\
-"static int g_dds_bestfitmap6[256][2][4] =\n"\
+"__constant static int g_dds_bestfitmap6[256][2][4] =\n"\
 "{\n"\
 "	{{ 0,  0,   0,   1} /* colour   0, closest below   0, closest above   1 */, { 0,  0,   0,   2}  /* colour   0, closest below   0, closest above   2 */}, // index   0\n"\
 "	{{ 0,  1,   0,   3} /* colour   1, closest below   0, closest above   3 */, { 0,  0,   1,   2}  /* colour   0, closest below   0, closest above   2 */}, // index   1\n"\
@@ -2168,7 +2168,7 @@ char *g_bcn_kernel_source =
 "	{{63, 62, 253, 255} /* colour 254, closest below 252, closest above 255 */, {62, 63, 252, 255}  /* colour 253, closest below 251, closest above 255 */}, // index 254\n"\
 "	{{63, 63, 254, 255} /* colour 255, closest below 254, closest above 255 */, {63, 63, 254, 255}  /* colour 255, closest below 253, closest above 255 */}  // index 255\n"\
 "};\n"\
-"static int g_dds_round5[256][2] = \n"\
+"__constant static int g_dds_round5[256][2] = \n"\
 "{\n"\
 "	{0, 0},\n"\
 "	{-1, -1},\n"\
@@ -2427,7 +2427,7 @@ char *g_bcn_kernel_source =
 "	{-1, -1},\n"\
 "	{31, 31}\n"\
 "};\n"\
-"static int g_dds_round6[256][2] = \n"\
+"__constant static int g_dds_round6[256][2] = \n"\
 "{\n"\
 "	{0, 0},\n"\
 "	{0, 1},\n"\
@@ -3120,9 +3120,9 @@ char *g_bcn_kernel_source =
 "	int count = 0;\n"\
 "	mat3x3f32_t mat;\n"\
 "\n"\
-"	mean[0] = 0.0;\n"\
-"	mean[1] = 0.0;\n"\
-"	mean[2] = 0.0;\n"\
+"	mean[0] = 0.0f;\n"\
+"	mean[1] = 0.0f;\n"\
+"	mean[2] = 0.0f;\n"\
 "\n"\
 "	for (k = 0; k < 4; k++)\n"\
 "		for (m = 0; m < 4; m++)\n"\
@@ -4449,7 +4449,7 @@ char *g_bcn_kernel_source =
 "#endif\n"\
 "}\n"\
 "\n"\
-"void DDS_EncodeBC4Blockf32(int options, int channel, uchar *block, float *pixel4x4_rgba)\n"\
+"void DDS_EncodeBC4Blockf32(int options, int channel, __global uchar *block, float *pixel4x4_rgba)\n"\
 "{\n"\
 "	int i, j, k;\n"\
 "	float alpha_val[8];\n"\
