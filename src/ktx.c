@@ -66,7 +66,7 @@ int KTX_SaveETC(char *output_name, int format, int width, int height, int block_
 	faceSlice = 0;
 	if (result != KTX_SUCCESS)
 		return -1;
-	for (i = 0; i < g_system.num_mipmap_levels; i++)
+	for (i = 0; i < (g_system.opts.enable_mipmap ? g_system.num_mipmap_levels : 1); i++)
 	{
 		srcSize = ((g_system.image[i].width + 3) >> 2) * ((g_system.image[i].height + 3) >> 2) * 8 * block_mul;
 		LOG_PRINT("Mip level %i, %i x %i (%i x %i blocks), size: %i\n", i, g_system.image[i].width, g_system.image[i].height, ((g_system.image[i].width + 3) >> 2), ((g_system.image[i].height + 3) >> 2), (int)srcSize);

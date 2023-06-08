@@ -677,6 +677,9 @@ int Codec_GetEncodeChunks(device_group_t *device_group, int device_index, image_
 			else
 				macroblock_size = device->codec[codec].macroblock_size[options->quality];
 
+			if (macroblock_size < 16)	// g_local_group_size = 16
+				macroblock_size = 16;
+
 			chunks_x = (blocks_x + macroblock_size - 1) / macroblock_size;
 			chunks_y = (blocks_y + macroblock_size - 1) / macroblock_size;
 

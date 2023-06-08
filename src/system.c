@@ -1,5 +1,10 @@
 float errsum = 0.0f;
 
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+#define WINDOW_CLASSNAME	L"YABE"
+#define WINDOW_TITLE		L"YABE"
+
 #include <windows.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,6 +15,8 @@ float errsum = 0.0f;
 #include <psapi.h>
 #include <Dbghelp.h>
 #include <process.h>
+#include <uxtheme.h>
+#include <shlobj.h>
 
 #include <gl\gl.h>
 #include <gl\glu.h>
@@ -181,6 +188,10 @@ unsigned int System_ProgressThread(void *p)
 			Sleep(10);
 		if (i == 10)
 			i = 0;
+		if (g_win_system.is_gui)
+		{
+			System_UpdateGUIProgressBar(g_system.current_block / (double)g_system.total_blocks);
+		}
 	}
 	if (!g_system.opts.enable_log)
 		ALWAYS_PRINT_NODEC("\r%.1f sec... (%.2f%%)\n", Timer_TicksToSecondsf64(Timer_GetTicks() - timer), 100.0f);
@@ -190,7 +201,7 @@ unsigned int System_ProgressThread(void *p)
 }
 void System_StartProgressThread(int is_encode_progress, int total_iterations)
 {
-	if (!g_system.opts.enable_log)
+	if (!g_system.opts.enable_log || g_win_system.is_gui)
 	{
 		g_system.is_encode_progress = is_encode_progress;
 		g_system.is_running = 1;
@@ -202,7 +213,7 @@ void System_StartProgressThread(int is_encode_progress, int total_iterations)
 }
 void System_EndProgressThread()
 {
-	if (!g_system.opts.enable_log)
+	if (!g_system.opts.enable_log || g_win_system.is_gui)
 	{
 		g_system.is_running = 0;
 		WaitForSingleObject((HANDLE)g_system.progress_thread_h, INFINITE);
@@ -213,7 +224,7 @@ void System_EndProgressThread()
 }
 void System_AddProgress(int is_encode_progress, int iterations)
 {
-	if (!g_system.opts.enable_log && is_encode_progress == g_system.is_encode_progress)
+	if ((!g_system.opts.enable_log || g_win_system.is_gui) && (is_encode_progress == g_system.is_encode_progress))
 	{
 		g_system.current_block += iterations;
 	}
@@ -571,9 +582,9 @@ int System_ParseOptions(int argc, char **argv)
 	return 0;
 }
 
-char *System_ModeToString()
+char *System_ModeToString(int encode_mode)
 {
-	switch(g_system.opts.encode_mode)
+	switch(encode_mode)
 	{
 		case MODE_ETC1:
 			return "ETC1";
@@ -636,6 +647,7 @@ int System_CodecToGLFormat(int codec, int is_srgb)
 	}
 }
 
+// console subsystem
 int main(int argc, char **argvv)
 {
 	int error = 0;
@@ -690,7 +702,7 @@ int main(int argc, char **argvv)
 #endif
 #endif
 	g_system.info.time_start = Timer_GetTicks();
-	g_system.opts.dds_quality = DDS_QUALITY_NORMAL;
+	g_system.opts.dds_quality = CODEC_QUALITY_NORMAL;
 
 	ilInit();
 	iluInit();
@@ -782,7 +794,7 @@ int main(int argc, char **argvv)
 	}
 	ALWAYS_PRINT_NODEC("Colour mode: %s\n", g_system.opts.is_ypbpr ? "YPbPr" : "RGB");
 	ALWAYS_PRINT_NODEC("Colourspace: %s\n", g_system.opts.srgb? "sRGB" : "RGB");
-	ALWAYS_PRINT_NODEC("Encoding mode: %s\n", System_ModeToString());
+	ALWAYS_PRINT_NODEC("Encoding mode: %s\n", System_ModeToString(g_system.opts.encode_mode));
 	ALWAYS_PRINT_NODEC("Mipmaps: %s (%i)\n", g_system.opts.enable_mipmap ? "Enabled" : "Disabled", g_system.num_mipmap_levels);
 	ALWAYS_PRINT_NODEC("Alpha cutoff: %f\n", g_system.opts.alpha_cutoff);
 	ALWAYS_PRINT_NODEC("Colour error target: %f\n", g_system.opts.colour_error_target);
@@ -1043,3 +1055,4 @@ MAIN_EXIT:
 
 	return error ? -1 : num_cl_devices;
 }
+

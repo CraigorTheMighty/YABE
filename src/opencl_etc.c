@@ -109,7 +109,7 @@ int CL_ETC_TestCodecGroup(device_t *device)
 
 					total_sec = Timer_TicksToSecondsf64(total_ticks);
 
-					LOG_PRINT("Paramters for %s quality %i: macroblock %i x %i took %.2f ms\n", Codec_AsString(codec_id[i]), k, macro_size, macro_size, 1000.0 * total_sec);
+					LOG_PRINT("Parameters for %s quality %i: macroblock %i x %i took %.2f ms\n", Codec_AsString(codec_id[i]), k, macro_size, macro_size, 1000.0 * total_sec);
 
 					if (total_sec > 0.25)
 						test_kernel[i][k] = 0;

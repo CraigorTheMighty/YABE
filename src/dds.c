@@ -1374,7 +1374,7 @@ int DDS_SaveDDS(char *output_name, int format)
 
 	dds.header.dwSize = 124;
 	dds.header.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT | DDSD_LINEARSIZE;
-	if (g_system.num_mipmap_levels > 1)
+	if ((g_system.num_mipmap_levels > 1) && g_system.opts.enable_mipmap)
 		dds.header.dwFlags |= DDSD_MIPMAPCOUNT;
 	dds.header.dwHeight = g_system.image[0].height;
 	dds.header.dwWidth = g_system.image[0].width;
@@ -1460,7 +1460,7 @@ int DDS_SaveDDS(char *output_name, int format)
 		fwrite(&dds.header_dxt10.arraySize, sizeof(UINT), 1, f);
 		fwrite(&dds.header_dxt10.miscFlags2, sizeof(UINT), 1, f);
 	}
-	for (i = 0; i < g_system.num_mipmap_levels; i++)
+	for (i = 0; i < (g_system.opts.enable_mipmap ? g_system.num_mipmap_levels : 1); i++)
 	{
 		fwrite(g_system.image[i].encoded, 1, DDS_BlockSize(format) * ((g_system.image[i].width + 3) >> 2) * ((g_system.image[i].height + 3) >> 2), f);
 	}
